@@ -27,7 +27,7 @@ Install the required Python packages using pip:
 
 ```sh
 pip install pandas pyensembl
-
+```
 
 ## Arguments
 --directory: Path to the directory containing gzipped BED files (required).
