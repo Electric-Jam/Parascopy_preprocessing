@@ -30,16 +30,16 @@ pip install pandas pyensembl
 ```
 
 ## Arguments
---directory: Path to the directory containing gzipped BED files (required).
---isExonic: Boolean flag to filter exonic intervals (required).
---isDuplication: Boolean flag to handle duplication intervals (required).
---isDeletion: Boolean flag to handle deletion intervals (required).
---output: Path to the output CSV file (required).
+- --directory: Path to the directory containing gzipped BED files (required).
+- --isExonic: Boolean flag to filter exonic intervals (required).
+- --isDuplication: Boolean flag to handle duplication intervals (required).
+- --isDeletion: Boolean flag to handle deletion intervals (required).
+- --output: Path to the output CSV file (required).
 
 
 ## Output
 The script generates the following output files:
 
-<output_path>_agCN.tsv: Combined genotype matrix for agCN values.
-<output_path>_psCN_Dup.tsv: Combined genotype matrix for psCN duplication values.
-<output_path>_psCN_Del.tsv: Combined genotype matrix for psCN deletion values.
+- <output_path>_agCN.tsv: Combined genotype matrix for agCN values.
+- <output_path>_psCN_Dup.tsv: Combined genotype matrix for psCN duplication values.
+- <output_path>_psCN_Del.tsv: Combined genotype matrix for psCN deletion values.
