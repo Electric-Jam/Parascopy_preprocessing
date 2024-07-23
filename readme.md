@@ -30,7 +30,7 @@ pip install pandas pyensembl
 ```
 
 ## Arguments
-- --directory: Path to the directory containing gzipped BED files (required).
+- --directory: Path to the directory containing gzipped res.samples files (required).
 - --isExonic: Boolean flag to filter exonic intervals (required).
 - --isDuplication: Boolean flag to handle duplication intervals (required).
 - --isDeletion: Boolean flag to handle deletion intervals (required).

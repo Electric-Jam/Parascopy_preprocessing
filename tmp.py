@@ -32,9 +32,6 @@ def read_gz_file(file_path):
         return None, None
 
 def create_genotype_agCN(data_frame):
-    # Creating a unique identifier for each variant
-    data_frame['variant'] = data_frame.apply(lambda row: f"{row['#chrom']}_{row['start']}_{row['end']}", axis=1)
-    
     # Pivoting the table to create genotype matrix with agCN values
     genotype_matrix = data_frame.pivot(index='variant', columns='sample', values='agCN')
     print(f"\nGenotype Matrix agCN:")
@@ -43,9 +40,6 @@ def create_genotype_agCN(data_frame):
     return genotype_matrix
 
 def create_genotype_psCN(data_frame, isDuplication = None, isDeletion = None, isExonic = None, exon_dic_start = None, exon_dic_end = None):
-    # Creating a unique identifier for each variant
-    data_frame['variant'] = data_frame.apply(lambda row: f"{row['#chrom']}_{row['start']}_{row['end']}", axis=1)
-
     # Convert psCN values to tuples of integers, handle '?' values
     data_frame['psCN_tuple'] = data_frame['psCN'].apply(lambda x: tuple((int(y) if y != '?' else None) for y in x.split(',')))
     
@@ -100,10 +94,7 @@ def create_genotype_psCN(data_frame, isDuplication = None, isDeletion = None, is
 
     return genotype_matrix
 
-def collapse_by_gene(genotype_matrix, data_frame):
-    # Creating a unique identifier for each variant
-    data_frame['variant'] = data_frame.apply(lambda row: f"{row['#chrom']}_{row['start']}_{row['end']}", axis=1)
-    
+def collapse_by_gene(genotype_matrix, data_frame):    
     # Extract only 'locus' and 'variant' columns
     data_frame = data_frame[['locus', 'variant']]
 
@@ -172,12 +163,13 @@ def main():
          exon_dic_start = None
          exon_dic_end = None           
     
+    df_loc_var_list = []
     genotype_matrices_agCN = []
     genotype_matrices_psCN_Dup = []
     genotype_matrices_psCN_Del = []
-    
+
+    print(f"\nReading files from {directory}")
     for file_name in sorted(os.listdir(directory)):
-    # for file_name in os.listdir(directory):
         if file_name.endswith('res.samples.bed.gz'):
             file_path = os.path.join(directory, file_name)
             metadata, data_frame = read_gz_file(file_path)
@@ -185,7 +177,9 @@ def main():
             if not data_frame.empty:
                 print(f"\nData from {file_name}:")
                 print(data_frame)
-                
+
+                data_frame['variant'] = data_frame.apply(lambda row: f"{row['#chrom']}_{row['start']}_{row['end']}", axis=1)
+
                 genotype_matrix_agCN = create_genotype_agCN(data_frame)
                 genotype_matrices_agCN.append(genotype_matrix_agCN)
                 
@@ -194,18 +188,32 @@ def main():
                     genotype_matrix_psCN_Dup = collapse_by_gene(genotype_matrix_psCN_Dup, data_frame)
                     print(f"\nGenotype Matrix psCN Duplication:")
                     print(genotype_matrix_psCN_Dup)
+                    genotype_matrices_psCN_Dup.append(genotype_matrix_psCN_Dup)
 
                 if isDeletion:
                     genotype_matrix_psCN_Del = create_genotype_psCN(data_frame,  isDeletion = isDeletion, isExonic = isExonic, exon_dic_start = exon_dic_start, exon_dic_end = exon_dic_end)
                     genotype_matrix_psCN_Del = collapse_by_gene(genotype_matrix_psCN_Del, data_frame)
                     print(f"\nGenotype Matrix psCN Deletion:")
                     print(genotype_matrix_psCN_Del)
+                    genotype_matrices_psCN_Del.append(genotype_matrix_psCN_Del)
 
-                genotype_matrices_psCN_Dup.append(genotype_matrix_psCN_Dup)
-                genotype_matrices_psCN_Del.append(genotype_matrix_psCN_Del)
+
+                df_loc_var_list.append(data_frame[['locus', 'variant']])
+
+    df_loc_var = pd.concat(df_loc_var_list)
+    df_loc_var = df_loc_var.drop_duplicates()
     
     if genotype_matrices_agCN:
         combined_agCN = pd.concat(genotype_matrices_agCN, axis=1)
+
+        # left join genotype_matrix on data_frame to add 'locus' column
+        combined_agCN = combined_agCN.join(df_loc_var.set_index('variant'), on='variant')
+
+        # Bring the locus column to the front
+        cols = combined_agCN.columns.tolist()
+        cols = cols[-1:] + cols[:-1]
+        combined_agCN = combined_agCN[cols]
+
         combined_agCN.to_csv(f"{out_path}_agCN.tsv", sep='\t')
         print(f"\nCombined Genotype Matrix agCN:")
         print(combined_agCN)
@@ -214,7 +222,6 @@ def main():
         if isExonic:
             print(f"\nFiltering out non-exonic intervals")
             exonic_idx = []
-            chrom_prev = ''; j_tmp = 0
             for i in range(len(combined_agCN.index)):
                 chrom, start, end = combined_agCN.index[i].split('_') ; chrom = chrom.replace('chr', '')
 
