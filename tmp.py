@@ -128,9 +128,9 @@ def collapse_by_gene(genotype_matrix, data_frame):
 def str2bool(v):
     if isinstance(v, bool):
         return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+    if v.lower() in ('yes', 'true', 't', 'y', '1', 'True', 'TRUE'):
         return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+    elif v.lower() in ('no', 'false', 'f', 'n', '0', 'False', 'FALSE'):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')    
@@ -234,7 +234,7 @@ def main():
                         break
                     if int(start) <= exon_start and int(end) >= exon_end:
                         exonic_idx.append(i)
-                        break          
+                        break
 
             exonic_idx = list(set(exonic_idx))
             combined_agCN = combined_agCN.iloc[exonic_idx]
