@@ -214,10 +214,6 @@ def main():
         cols = cols[-1:] + cols[:-1]
         combined_agCN = combined_agCN[cols]
 
-        combined_agCN.to_csv(f"{out_path}_agCN.tsv", sep='\t')
-        print(f"\nCombined Genotype Matrix agCN:")
-        print(combined_agCN)
-
         #filtering out non-exonic intervals
         if isExonic:
             print(f"\nFiltering out non-exonic intervals")
@@ -238,8 +234,12 @@ def main():
 
             exonic_idx = list(set(exonic_idx))
             combined_agCN = combined_agCN.iloc[exonic_idx]
-            print(f"\nCombined Genotype Matrix agCN after filtering out non-exonic intervals:")
-            print(combined_agCN)
+
+        combined_agCN.to_csv(f"{out_path}_agCN.tsv", sep='\t')
+        print(f"\nCombined Genotype Matrix agCN:")
+        print(combined_agCN)
+
+
             
     
     if genotype_matrices_psCN_Dup:
