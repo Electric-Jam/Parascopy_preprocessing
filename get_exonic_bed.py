@@ -10,6 +10,6 @@ for gene in ensembl.genes():
     if gene.gene_name in gene_list:
         exons = gene.exons
         for exon in exons:
-            exon_bed = exon_bed.append({'contig': exon.contig, 'start': exon.start, 'end': exon.end}, ignore_index=True)
+            exon_bed = exon_bed.append({'contig': 'chr' + exon.contig, 'start': exon.start, 'end': exon.end}, ignore_index=True)
 
 exon_bed.to_csv('exonic_bed.bed', index=False, sep='\t', header=False)

@@ -24,6 +24,9 @@ def read_gz_file(file_path):
 
             # Creating DataFrame
             df = pd.DataFrame(data_lines, columns=column_names)
+
+            # Remove duplicates
+            df = df.drop_duplicates()
             
             return metadata, df
 
@@ -235,6 +238,8 @@ def main():
             exonic_idx = list(set(exonic_idx))
             combined_agCN = combined_agCN.iloc[exonic_idx]
 
+        # Remove the columns that has the same names
+        combined_agCN = combined_agCN.loc[:,~combined_agCN.columns.duplicated()]
         combined_agCN.to_csv(f"{out_path}_agCN.tsv", sep='\t')
         print(f"\nCombined Genotype Matrix agCN:")
         print(combined_agCN)
@@ -244,12 +249,18 @@ def main():
     
     if genotype_matrices_psCN_Dup:
         combined_psCN_Dup = pd.concat(genotype_matrices_psCN_Dup, axis=1)
+
+        # Remove the columns that has the same names
+        combined_psCN_Dup = combined_psCN_Dup.loc[:,~combined_psCN_Dup.columns.duplicated()]
         combined_psCN_Dup.to_csv(f"{out_path}_psCN_Dup.tsv", sep='\t')
         print(f"\nCombined Genotype Matrix psCN Duplication:")
         print(combined_psCN_Dup)
 
     if genotype_matrices_psCN_Del:
         combined_psCN_Del = pd.concat(genotype_matrices_psCN_Del, axis=1)
+
+        # Remove the columns that has the same names
+        combined_psCN_Del = combined_psCN_Del.loc[:,~combined_psCN_Del.columns.duplicated()]
         combined_psCN_Del.to_csv(f"{out_path}_psCN_Del.tsv", sep='\t')
         print(f"\nCombined Genotype Matrix psCN Deletion:")
         print(combined_psCN_Del)
