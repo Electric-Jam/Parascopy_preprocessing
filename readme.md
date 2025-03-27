@@ -43,3 +43,6 @@ The script generates the following output files:
 - <output_path>_agCN.tsv: Combined genotype matrix for agCN values.
 - <output_path>_psCN_Dup.tsv: Combined genotype matrix for psCN duplication values.
 - <output_path>_psCN_Del.tsv: Combined genotype matrix for psCN deletion values.
+
+## Analysis Scripts
+All the UKB related scripts for 500k analysis and previous test scripts could be found in UKB_scripts folder.
